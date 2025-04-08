@@ -23,10 +23,13 @@ class Task(db.Model):
     def to_dict(self):
         return {'id': self.id, 'title': self.title, 'description': self.description}
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
+# Create tables (alternative to @app.before_first_request)
+@app.before_request
+def create_tables_if_needed():
+    if not os.path.exists(db_path):
+        db.create_all()
 
+# Routes
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -46,13 +49,15 @@ def handle_tasks():
 @app.route('/api/tasks/<int:task_id>/', methods=['PUT', 'DELETE'])
 def handle_task(task_id):
     task = Task.query.get_or_404(task_id)
+
     if request.method == 'PUT':
         data = request.get_json()
         task.title = data.get('title', task.title)
         task.description = data.get('description', task.description)
         db.session.commit()
         return jsonify(task.to_dict())
-    elif request.method == 'DELETE':
+
+    if request.method == 'DELETE':
         db.session.delete(task)
         db.session.commit()
         return jsonify({'message': 'Task deleted'})
