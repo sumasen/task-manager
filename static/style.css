@@ -1,0 +1,13 @@
+body.bg-dark {
+    background-color: #121212 !important;
+    color: #fff !important;
+  }
+  
+  body.bg-dark .form-control,
+  body.bg-dark .btn,
+  body.bg-dark .list-group-item {
+    background-color: #1f1f1f;
+    color: #fff;
+    border-color: #333;
+  }
+  
